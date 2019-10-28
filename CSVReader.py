@@ -4,8 +4,8 @@ import win32com
 import os
 import sys
 
-DocInsureMailbox = "jbateman@markerstudy.com"
-SearchMailbox = "UATTalk2us@insurancefactory.co.uk"
+DocInsureMailbox = "Me@Mailbox.com"
+SearchMailbox = "UATTalk2us@Mailbox.co.uk"
 outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
 #----Testing----
 #inbox = outlook.GetDefaultFolder(6)
