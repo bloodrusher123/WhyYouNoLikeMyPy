@@ -1,0 +1,15 @@
+import openpyxl
+import os
+import xlrd
+import pandas as pd
+
+
+wb = pd.read_excel('C:/Users/jason/Documents/Excel Test/Book1.xlsx', sheet_name='Sheet2')
+def gettherow(row):
+    for i in wb.index:
+        if '02.12.2019' in wb['Date'][i]:
+            row = wb['Agg Quote'][i]
+    return(row)
+AggQuote = ''
+answer = gettherow(AggQuote)
+print(answer)
