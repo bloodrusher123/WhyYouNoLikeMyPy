@@ -1,47 +1,68 @@
-from selenium import webdriver
-import csv
+import openai
+import pyttsx3
+import speech_recognition as sr
 import time
-from selenium.webdriver.support.ui import WebDriverWait
-from Logging import log
-import Website
-import pandas as pd
 
-# INIT
+openai.api_key = "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"
+
+engine = pyttsx3.init()
 
 
-header = ['Site', 'Pet', 'Breed', 'Age', 'Gender', 'Neutered', 'Purchase Price', 'Monthly', 'Yearly', 'Vet Excess',
-          'Annual Condition Limit']
+def transcribe_audio_to_text(filename):
+    recognizer = sr.Recognizer()
+    with sr.AudioFile(filename) as source:
+        audio = recognizer.record(source)
+        try:
+            return recognizer.recognize_google(audio)
+        except:
+            print('Skipping unknown error')
 
 
-df = pd.read_csv('C:/Users/jbateman/Documents/PetPlanCatchUp.csv',  encoding = "ISO-8859-1")
-count_df_rows = df.shape[0]
+def generate_response(prompt):
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=4000,
+        n=1,
+        stop=None,
+        temperature=0.5,
+    )
+    return response["choices"][0]["text"]
 
 
-def MainPageLoad(driver, csv_writer, dtrow):
-    url = Website.site(dtrow[0])
-    wait = WebDriverWait(driver, 30)
-    log('Navigate to ' + dtrow[0])
-    try:
-        driver.get(url)
-    except:
-        log(("Driver Failure"))
-        print('Driver Fail')
-    Website.PetSite(dtrow, csv_writer, driver, wait)
-    driver.delete_all_cookies()
+def speak_text(text):
+    engine.say(text)
+    engine.runAndWait()
 
 
-with open("PetPlanResultsCatchUp.csv", 'wt', newline='') as f:
-    csv_writer = csv.writer(f)
-    csv_writer.writerow(header)
-    time.sleep(5)
-    log('<----STARTING PROCESS---->')
-    for index, dtrow in df.iterrows():
-        time.sleep(1)
-        driver = webdriver.Chrome("C:/Users/jbateman/AppData/Local/Programs/Python/Python37/scripts/"
-                                  "chromedriver.exe")
-        driver.set_page_load_timeout('10')
-        MainPageLoad(driver, csv_writer, dtrow)
-        time.sleep(2)
-        driver.close()
-        print(str(index + 1) + ' out of ' + str(count_df_rows) + ' Transaction Complete')
-    log('<----PROCESS COMPLETE---->')
+def main():
+    while True:
+        print("Says Genius to start recording question...")
+        with sr.Microphone() as source:
+            recognizer = sr.Recognizer()
+            audio = recognizer.listen(source)
+            try:
+                transcription = recognizer.recognize_google(audio)
+                if transcription.lower() == 'genius':
+                    filename = "input.wav"
+                    print("Say Your Question..")
+                    with sr.Microphone() as source:
+                        recognizer = sr.Recognizer()
+                        source.pause_threshold = 1
+                        audio = recognizer.listen(source, phrase_time_limit=None, timeout=None)
+                        with open(filename, "wb") as f:
+                            f.write(audio.get_wav_data())
+
+                    text = transcribe_audio_to_text(filename)
+                    if text:
+                        print("You said:  {text}")
+
+                        response = generate_response(text)
+                        print("GPT-3 says: {response}")
+                        speak_text(response)
+            except Exception as e:
+                print("An error occurred: {}".format(e))
+
+
+if __name__ == "__main__":
+    main()
