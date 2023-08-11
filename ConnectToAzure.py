@@ -4,8 +4,8 @@ import pandas as pd
 import requests
 import urllib.request as request
 
-account_name = 'sadev01mcpdocs898d6ddc98'
-account_key = 'lOn0piiWGXz35U8xKETM+uxGZ5GkcgUd61LRbKLAX8VvgdfGh3OvlAmClXw51NGkTWVhkgat4f+BFyt9e69Hcg=='
+account_name = 'sadev01'
+account_key = ''
 container_name = 'released'
 
 connect_str = 'DefaultEndpointsProtocol=https;AccountName=' + account_name + ';AccountKey=' + account_key + ';EndpointSuffix=core.windows.net'
