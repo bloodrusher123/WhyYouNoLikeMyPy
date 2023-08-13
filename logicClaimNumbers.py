@@ -11,6 +11,14 @@ def moveVideoFiles(listFilePaths, destinationPath):
                 print('Moved ' + i + ' to ' + j)
 
 def filterClaimNumbers(blobList):
+    listClaimNumbers = []
+    for i in blobList:
+        listClaimNumbers.append(i.split('/')[1])
+    filtertedClaimNumberList = filterListClaimNumbers(listClaimNumbers)
+    return filtertedClaimNumberList
+
+
+def filterListClaimNumbers(blobList):
     claimNumberList = list(set(blobList))
     print(claimNumberList)
     return claimNumberList
